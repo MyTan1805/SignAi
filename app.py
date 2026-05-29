@@ -7,9 +7,9 @@ import time
 
 app = Flask(__name__)
 
-with open("vsl_model.pkl", "rb") as f:
+with open("models/vsl_model.pkl", "rb") as f:
     model = pickle.load(f)
-with open("vsl_label_encoder.pkl", "rb") as f:
+with open("models/vsl_label_encoder.pkl", "rb") as f:
     le = pickle.load(f)
 
 mp_hands = mp.solutions.hands

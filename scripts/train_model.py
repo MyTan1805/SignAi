@@ -23,7 +23,7 @@ def normalize_landmarks(landmarks):
     return landmarks.flatten().tolist()
 
 print("Đang đọc dữ liệu...")
-df = pd.read_csv("vsl_data.csv", header=None)
+df = pd.read_csv("data/vsl_data.csv", header=None)
 
 X_raw = df.iloc[:, 1:].values
 y = df.iloc[:, 0].values
@@ -56,9 +56,9 @@ acc = accuracy_score(y_test, y_pred)
 print(f"\n✅ Độ chính xác: {acc*100:.1f}%")
 print(classification_report(y_test, y_pred, target_names=le.classes_))
 
-with open("vsl_model.pkl", "wb") as f:
+with open("models/vsl_model.pkl", "wb") as f:
     pickle.dump(model, f)
-with open("vsl_label_encoder.pkl", "wb") as f:
+with open("models/vsl_label_encoder.pkl", "wb") as f:
     pickle.dump(le, f)
 
 print("🎉 Đã lưu model!")
