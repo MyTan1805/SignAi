@@ -1,8 +1,54 @@
-# 🤟 VSL Learning - Học Ngôn Ngữ Ký Hiệu Việt Nam
+# 🤟 VSL Learning
 
-Ứng dụng web học ngôn ngữ ký hiệu thông qua camera, sử dụng AI để đánh giá động tác của người dùng.
+Ứng dụng web học **Ngôn Ngữ Ký Hiệu Việt Nam** qua camera, sử dụng AI nhận diện động tác tay theo thời gian thực.
 
-## 🛠️ Cài đặt
+---
+
+## ✨ Tính năng
+
+- 📷 Nhận diện ký hiệu tay qua webcam
+- 🧠 AI đánh giá độ chính xác động tác
+- 📚 Hệ thống bài học từng bước
+- ✅ Tự động qua bài khi giữ đúng tư thế 2 giây
+
+---
+
+## 🖥️ Demo
+
+> Coming soon
+
+---
+
+## 📁 Cấu trúc project
+
+```
+SignAi/
+├── app.py                  # Flask entry point
+├── requirements.txt
+├── README.md
+│
+├── core/                   # Logic AI
+│   ├── model.py
+│   └── collector.py
+│
+├── data/                   # Dữ liệu training
+│   └── vsl_data.csv
+│
+├── models/                 # Model đã train
+│   ├── vsl_model.pkl
+│   └── vsl_label_encoder.pkl
+│
+├── scripts/                # Script tiện ích
+│   ├── train_model.py
+│   └── check_data.py
+│
+└── templates/
+    └── index.html
+```
+
+---
+
+## ⚙️ Cài đặt
 
 ### Yêu cầu
 - Python 3.11
@@ -10,46 +56,45 @@
 
 ### Các bước
 
-**1. Clone repo**
 ```bash
-git clone https://github.com/MyTan1805/TEN_REPO.git
-cd TEN_REPO
-```
+# 1. Clone repo
+git clone https://github.com/MyTan1805/SignAi.git
+cd SignAi
 
-**2. Tạo môi trường ảo**
-```bash
+# 2. Tạo môi trường ảo
 py -3.11 -m venv venv
 venv\Scripts\activate
+
+# 3. Cài thư viện
+pip install -r requirements.txt
 ```
 
-**3. Cài thư viện**
-```bash
-pip install mediapipe==0.10.14 opencv-python flask scikit-learn pandas numpy
-```
+---
 
-## 📦 Thu thập dữ liệu
-
-Chạy `data_collector.py` cho từng chữ cái. Mỗi chữ cần **200 mẫu**.
+## 🗂️ Thu thập dữ liệu
 
 ```bash
-python data_collector.py
+python core/collector.py
 ```
 
 - Nhấn `S` để bắt đầu thu thập
-- Nhấn `Q` để thoát
-- Thay `label = "A"` thành `"B"`, `"C"`,... cho các chữ tiếp theo
+- Nhấn `Q` để dừng
+- Thay `label = "A"` thành `"B"`, `"C"`... cho từng chữ
+- Mỗi chữ cần tối thiểu **200 mẫu**
+
+---
 
 ## 🧠 Train model
 
-Sau khi thu thập đủ data:
-
 ```bash
-python train_model.py
+python scripts/train_model.py
 ```
 
-Sẽ tạo ra 2 file:
+Tạo ra 2 file trong `models/`:
 - `vsl_model.pkl`
 - `vsl_label_encoder.pkl`
+
+---
 
 ## 🚀 Chạy ứng dụng
 
@@ -57,38 +102,33 @@ Sẽ tạo ra 2 file:
 python app.py
 ```
 
-Mở trình duyệt vào **http://localhost:5000**
+Mở trình duyệt: **http://localhost:5000**
 
-## 📁 Cấu trúc project
-SignAi/
-├── app.py                  # Flask web app
-├── data_collector.py       # Thu thập dữ liệu
-├── train_model.py          # Huấn luyện model
-├── templates/
-│   └── index.html          # Giao diện web
-├── requirements.txt
-└── README.md
+---
 
 ## 🗺️ Roadmap
 
 - [x] Thu thập data
 - [x] Train AI
-- [x] Real-time nhận diện
+- [x] Nhận diện real-time
 - [x] Hệ thống bài học
-- [ ] Database lưu tiến độ
-- [ ] Thêm nhiều chữ cái
+- [ ] Database lưu tiến độ người dùng
+- [ ] Thêm toàn bộ bảng chữ cái
 - [ ] Deploy lên server
-Tạo thêm requirements.txt để người khác cài cho tiện:
-mediapipe==0.10.14
-opencv-python
-flask
-scikit-learn
-pandas
-numpy
-Tạo file bằng lệnh:
-powershellNew-Item README.md
-New-Item requirements.txt
-Rồi copy nội dung vào, sau đó:
-powershellgit add .
-git commit -m "add README and requirements"
-git push
+
+---
+
+## 🛠️ Tech Stack
+
+| | Công nghệ |
+|---|---|
+| Backend | Python, Flask |
+| AI / ML | MediaPipe, Scikit-learn |
+| Frontend | HTML, CSS, JavaScript |
+| Computer Vision | OpenCV |
+
+---
+
+## 👤 Tác giả
+
+**Quach My Tan** — [@MyTan1805](https://github.com/MyTan1805)
