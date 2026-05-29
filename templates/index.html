@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Học Ngôn Ngữ Ký Hiệu</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial; background: #f5f5f5; color: #333; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+        h1 { text-align: center; margin-bottom: 24px; font-size: 28px; }
+
+        .main { display: flex; gap: 24px; }
+
+        /* Camera */
+        .camera-box { flex: 1; }
+        .camera-box img { width: 100%; border-radius: 12px; display: block; }
+
+        /* Panel bên phải */
+        .panel { width: 280px; display: flex; flex-direction: column; gap: 16px; }
+
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+        .lesson-title { font-size: 20px; font-weight: bold; margin-bottom: 6px; }
+        .lesson-desc { color: #666; font-size: 14px; }
+        .sign-badge { font-size: 64px; text-align: center; margin: 12px 0; }
+
+        .prediction-label { font-size: 48px; font-weight: bold; color: #2196F3; text-align: center; }
+        .confidence { text-align: center; color: #888; font-size: 14px; margin-top: 4px; }
+
+        /* Progress bar */
+        .progress-wrap { background: #eee; border-radius: 99px; height: 12px; overflow: hidden; }
+        .progress-bar { height: 100%; background: #4CAF50; border-radius: 99px; transition: width 0.2s; }
+        .progress-label { font-size: 13px; color: #666; margin-bottom: 6px; }
+
+        /* Passed */
+        .passed-box { background: #E8F5E9; border: 2px solid #4CAF50; border-radius: 12px;
+                      padding: 20px; text-align: center; display: none; }
+        .passed-box h2 { color: #4CAF50; font-size: 24px; margin-bottom: 12px; }
+        .btn { background: #4CAF50; color: white; border: none; padding: 12px 24px;
+               border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%; }
+        .btn:hover { background: #43A047; }
+
+        /* Lesson list */
+        .lesson-item { display: flex; align-items: center; gap: 10px;
+                       padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
+        .dot.done { background: #4CAF50; }
+        .dot.active { background: #2196F3; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🤟 Học Ngôn Ngữ Ký Hiệu</h1>
+    <div class="main">
+        <div class="camera-box">
+            <img src="/video_feed">
+        </div>
+        <div class="panel">
+
+            <!-- Bài học hiện tại -->
+            <div class="card" id="lesson-card">
+                <div class="lesson-title" id="lesson-title">--</div>
+                <div class="lesson-desc" id="lesson-desc">--</div>
+                <div class="sign-badge" id="sign-badge">?</div>
+            </div>
+
+            <!-- Kết quả AI -->
+            <div class="card">
+                <div class="prediction-label" id="prediction">--</div>
+                <div class="confidence" id="confidence">Confidence: --%</div>
+            </div>
+
+            <!-- Thanh tiến trình giữ tư thế -->
+            <div class="card">
+                <div class="progress-label" id="hold-label">Giữ tư thế: 0 / 2s</div>
+                <div class="progress-wrap">
+                    <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+                </div>
+            </div>
+
+            <!-- Qua bài -->
+            <div class="passed-box" id="passed-box">
+                <h2>🎉 Xuất sắc!</h2>
+                <p style="margin-bottom:16px; color:#555;">Bạn đã qua bài này!</p>
+                <button class="btn" onclick="nextLesson()">Bài tiếp theo →</button>
+            </div>
+
+            <!-- Danh sách bài -->
+            <div class="card">
+                <div style="font-weight:bold; margin-bottom:10px;">Tiến độ</div>
+                <div id="lesson-list"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function nextLesson() {
+        fetch('/next_lesson', { method: 'POST' })
+            .then(() => document.getElementById('passed-box').style.display = 'none');
+    }
+
+    setInterval(() => {
+        fetch('/state')
+            .then(r => r.json())
+            .then(data => {
+                // Bài học
+                document.getElementById('lesson-title').innerText = data.current_lesson.title;
+                document.getElementById('lesson-desc').innerText = data.current_lesson.description;
+                document.getElementById('sign-badge').innerText = data.current_lesson.sign;
+
+                // AI prediction
+                document.getElementById('prediction').innerText = data.prediction || '--';
+                document.getElementById('confidence').innerText = `Confidence: ${data.confidence}%`;
+
+                // Progress bar
+                const pct = Math.min((data.hold_duration / data.hold_required) * 100, 100);
+                document.getElementById('progress-bar').style.width = pct + '%';
+                document.getElementById('hold-label').innerText =
+                    `Giữ tư thế: ${data.hold_duration}s / ${data.hold_required}s`;
+
+                // Passed
+                if (data.passed) {
+                    document.getElementById('passed-box').style.display = 'block';
+                }
+
+                // Lesson list
+                let html = '';
+                for (let i = 0; i < data.total_lessons; i++) {
+                    const isDone = data.completed_lessons.includes(i);
+                    const isActive = i === data.current_lesson.id - 1;
+                    html += `<div class="lesson-item">
+                        <div class="dot ${isDone ? 'done' : isActive ? 'active' : ''}"></div>
+                        <span>Bài ${i+1}: ${['Chữ A','Chữ B','Chữ C'][i]}</span>
+                        ${isDone ? '<span style="margin-left:auto;color:#4CAF50">✓</span>' : ''}
+                    </div>`;
+                }
+                document.getElementById('lesson-list').innerHTML = html;
+            });
+    }, 300);
+</script>
+</body>
+</html>
